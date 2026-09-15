@@ -1,0 +1,41 @@
+ip: i2s
+contract: { aw: 8, dw: 32 }
+base: 0x10010000
+size: 0x100
+regs:
+  - name: ctrl
+    offset: 0x00
+    desc: enable, interrupt enable and word length
+    fields:
+      - { name: en,  bits: "0:0",  sw: rw, hw: r, reset: 0 }
+      - { name: ien, bits: "1:1",  sw: rw, hw: r, reset: 0 }
+      # MVP 只做 16、24、32 三档字长，别的写不进去
+      - { name: len, bits: "13:8", sw: rw, hw: r, reset: 16, legal: [16, 24, 32] }
+  # SCK 半周期多少拍减一。占空比恒为一半，UM11732 表 3 要高、低各不少于 0.35T
+  - name: div
+    offset: 0x04
+    desc: SCK half period in clock cycles, minus one
+    fields: [ { name: val, width: 16, sw: rw, hw: r, reset: 3 } ]
+  - name: txl
+    offset: 0x08
+    desc: left sample to send, the low len bits
+    fields: [ { name: val, width: 32, sw: rw, hw: r, reset: 0 } ]
+  - name: txr
+    offset: 0x0C
+    desc: right sample to send, the low len bits
+    fields: [ { name: val, width: 32, sw: rw, hw: r, reset: 0 } ]
+  - name: rxl
+    offset: 0x10
+    desc: last left sample received
+    feature: rx
+    fields: [ { name: val, width: 32, sw: r, hw: w, volatile: true } ]
+  - name: rxr
+    offset: 0x14
+    desc: last right sample received
+    feature: rx
+    fields: [ { name: val, width: 32, sw: r, hw: w, volatile: true } ]
+  - name: status
+    offset: 0x18
+    desc: a frame of both channels has gone out
+    fields:
+      - { name: frame, bits: "0:0", sw: rw, onwrite: woclr, hw: r, hwset: true, stickybit: true, reset: 0 }

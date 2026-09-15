@@ -1,0 +1,72 @@
+name: i2s
+version: 0.1.0
+spec: '0.1'
+kind: ip
+lang: bsv
+identity:
+  slug: i2s-tapeout-bsv
+  display_name: I2S controller
+  summary: I2S controller that clocks a stereo frame out and reads one back, 
+    with the word length set at run time.
+  category: peripheral
+  subcategories:
+  - audio
+  ip_family: i2s
+  integration_profile:
+  - apb4-slave
+  maturity: simulated
+contract:
+  version: 1
+  ctrl:
+    shape: flat
+    aw: 8
+    dw: 32
+  irq:
+  - name: irq
+    kind: level
+params: {}
+features:
+  # 关掉就只发不收（接 DAC 的用法）：少两个 32 位样本寄存器与接收移位
+  rx:
+    type: bool
+    default: true
+    area:
+      fixed: 1120.28
+emit:
+- kind: bsv
+  package: I2s
+  module: mkI2s
+  config_type: I2sCfg
+  interface: I2sIfc
+  ctrl: regs
+  pins:
+  - name: pins
+    type: I2sPins
+- kind: verilog-flat
+  bus: apb4
+deps:
+  hwcore: ^0.1
+  amba: ^0.1
+area:
+  base:
+    fixed: 2697.24
+  margin: 0.0
+  model: points-additive
+  error:
+    bound: 0.0
+    sign: over
+    note: first measured by ran recal --init; every configuration is on the grid
+  measured:
+  - at:
+      rx: false
+    um2: 2697.24
+  - at:
+      rx: true
+    um2: 3802.96
+  corner:
+    tool: ecc
+    pdk: ics55
+    freq_mhz: 100
+    measured: '2026-09-15'
+    toolchain: bsc 2026.01 · yosys 0.68+195 · ecc 0.1.0a11
+    gen_digest: sha256:fb991c54e312d8ab
