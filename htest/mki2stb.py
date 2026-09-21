@@ -61,7 +61,7 @@ verdict = ("words on the wire are MSB first with WS low for left and one clock o
 
 TEMPLATE = r'''package I2s@L@Tb;
 
-// 由 tb/mki2stb.py 生成，勿手改。这一点：rx=@RXON@
+// 由 htest/mki2stb.py 生成，勿手改。这一点：rx=@RXON@
 
 import StmtFSM::*;
 import ConfigReg::*;
